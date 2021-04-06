@@ -8,25 +8,28 @@ class Puissance4{
         this.joueurTurn = this.joueurs[0]
         this.gameBoard()
         this.listener()
+
+
+
     }
 
-    gameBoard(){
-    
-        for (let col = 0; col < this.cols; col++) {
-            let gameCol = document.createElement("div")
+  gameBoard(){
+  
+      for (let col = 0; col < this.cols; col++) {
+          let gameCol = document.createElement("div")
 
-            this.game.appendChild(gameCol)
-            gameCol.classList.add('col')
-            gameCol.setAttribute('data-col', col)
+          this.game.appendChild(gameCol)
+          gameCol.classList.add('col')
+          gameCol.setAttribute('data-col', col)
 
-            for (let row = 1; row < this.cols; row++) {
-                let gameRow = document.createElement("div")
-                gameCol.appendChild(gameRow)
-                gameRow.classList.add('row', 'row-empty')
-                gameRow.setAttribute('data-row', row)
-            }
-        }
-    }
+          for (let row = 1; row < this.cols; row++) {
+              let gameRow = document.createElement("div")
+              gameCol.appendChild(gameRow)
+              gameRow.classList.add('row', 'row-empty')
+              gameRow.setAttribute('data-row', row)
+          }
+      }
+  }
 
     listener(){
 
@@ -63,12 +66,27 @@ class Puissance4{
   }
 
   checkWin(divJouer){
-    let count = 1
+    //Vertical
     this.checkVertical(divJouer)
-    count = this.checkHorizontalGauche(divJouer, count)
-    console.log(count);
-    this.checkHorizontalDroite(divJouer,count)
+
+    //Horizontal
+    let countHorizontal = 1
+    countHorizontal = this.checkHorizontalGauche(divJouer, countHorizontal)
+    this.checkHorizontalDroite(divJouer,countHorizontal)
+
+    //Diagonal
+    
+    this.checkDiagonalInit(divJouer)
+
+    this.counterDiagonalGauche = this.diagonaleHautGauche(divJouer, this.counterDiagonalGauche)
+    this.diagonaleBasDroite(divJouer, this.counterDiagonalGauche)
+
+
+    this.counterDiagonalDroite = this.diagonaleHautDroite(divJouer,this.counterDiagonalDroite)
+    this.diagonaleBasGauche(divJouer,this.counterDiagonalDroite)
   }
+
+  //VERTICLAL
 
   checkVertical(divJouer){
     let count = 1
@@ -90,6 +108,8 @@ class Puissance4{
     }
   }
 
+  //HORIZONTAL
+
   checkHorizontalDroite(divJouer, count){
     
     let idRowJouer = parseInt(divJouer.getAttribute('data-row')) // row de la col jouer
@@ -100,25 +120,21 @@ class Puissance4{
     
    // console.log("LOG DE IDROWJOUER -1", idRowJouer);
     
-    
-   
-   console.log("DivJouer = ",arrayCol[ parseInt(idColJouer) + countColAfter])
- 
     while(arrayCol[idColJouer -countColAfter] !== undefined &&
           arrayCol[idColJouer -countColAfter].children[idRowJouer -1].classList.contains(this.joueurTurn.getColor()) == arrayCol[idColJouer].children[idRowJouer -1].classList.contains(this.joueurTurn.getColor())){
      
-            console.log(countColAfter);
-            console.log("!Valeur array Id coljouer -1",arrayCol[idColJouer -countColAfter].children[idRowJouer -1]);
-            console.log("Valeur array Id col cliquer",arrayCol[idColJouer]);
+            // console.log(countColAfter);
+            // console.log("!Valeur array Id coljouer -1",arrayCol[idColJouer -countColAfter].children[idRowJouer -1]);
+            // console.log("Valeur array Id col cliquer",arrayCol[idColJouer]);
             countColAfter++
             count++
-            console.log("Compteur = ",count);
+            // console.log("Compteur = ",count);
         if (count === 4) {
           return alert("Player " + this.joueurTurn.getColor() + " Win!")
         }
     }
   }
-  checkHorizontalGauche(divJouer, count ){
+  checkHorizontalGauche(divJouer, count){
   
     let idRowJouer = parseInt(divJouer.getAttribute('data-row')) // row de la col jouer
     let arrayRow = divJouer.parentNode.children // tout les row de notre col jouer
@@ -127,20 +143,17 @@ class Puissance4{
     let countColBefore = 1
     
    // console.log("LOG DE IDROWJOUER -1", idRowJouer);
-    
-    
-   
-   console.log("DivJouer = ",arrayCol[ parseInt(idColJouer) + countColBefore])
+
  
     while(arrayCol[idColJouer +countColBefore] !== undefined &&
           arrayCol[idColJouer +countColBefore].children[idRowJouer -1].classList.contains(this.joueurTurn.getColor()) == arrayCol[idColJouer].children[idRowJouer -1].classList.contains(this.joueurTurn.getColor())){
      
-            console.log(countColBefore);
-            console.log("!Valeur array Id coljouer -1",arrayCol[idColJouer +countColBefore].children[idRowJouer -1]);
-            console.log("Valeur array Id col cliquer",arrayCol[idColJouer]);
+            // console.log(countColBefore);
+            // console.log("!Valeur array Id coljouer -1",arrayCol[idColJouer +countColBefore].children[idRowJouer -1]);
+            // console.log("Valeur array Id col cliquer",arrayCol[idColJouer]);
             countColBefore++
             count++
-            console.log("Compteur = ",count);
+            // console.log("Compteur = ",count);
         if (count === 4) {
         
           return alert("Player " + this.joueurTurn.getColor() + " Win!")
@@ -148,6 +161,93 @@ class Puissance4{
     }
     return count
   }
+
+    //DIAGONALE
+
+
+    checkDiagonalInit(divJouer){
+      
+      this.counterDiagonalDroite = 1
+      this.counterDiagonalGauche = 1
+      this.idRowJouer = parseInt(divJouer.getAttribute('data-row') -1) // row de la col jouer
+      this.idColJouer = parseInt(divJouer.parentNode.getAttribute('data-col')) // id de la col jouer
+      this.colJouer = divJouer.parentNode
+      this.allCols = divJouer.parentNode.parentNode.children
+   
+      this.countColBefore = 1
+      this.countColAfter= 1
+
+    }
+
+    diagonaleHautGauche(divJouer,count){
+      
+  
+     
+
+        while (this.allCols[this.idColJouer - this.countColBefore] !== undefined &&
+          this.allCols[this.idColJouer - this.countColBefore].children[this.idRowJouer - this.countColBefore] !== undefined &&
+          this.allCols[this.idColJouer - this.countColBefore].children[this.idRowJouer - this.countColBefore].classList.contains(this.joueurTurn.getColor()) === divJouer.classList.contains(this.joueurTurn.getColor())
+        ){
+          this.countColBefore++
+          count ++
+          if (count == 4) {
+            alert('WINNER MA Gueule')
+          }
+        }
+        return count
+      
+
+    }
+
+    diagonaleBasDroite(divJouer,count){
+      
+        while (this.allCols[this.idColJouer + this.countColAfter] !== undefined &&
+          this.allCols[this.idColJouer + this.countColAfter].children[this.idRowJouer + this.countColAfter] !== undefined &&
+          this.allCols[this.idColJouer + this.countColAfter].children[this.idRowJouer + this.countColAfter].classList.contains(this.joueurTurn.getColor()) === divJouer.classList.contains(this.joueurTurn.getColor())
+          ){
+          this.countColAfter++
+          count ++
+          if (count == 4) {
+            alert('WINNER MA Gueule')
+
+          }
+
+        }
+    }
+    
+    diagonaleHautDroite(divJouer,count){
+      while (this.allCols[this.idColJouer + this.countColAfter] !== undefined &&
+        this.allCols[this.idColJouer + this.countColAfter].children[this.idRowJouer - this.countColAfter] !== undefined &&
+        this.allCols[this.idColJouer + this.countColAfter].children[this.idRowJouer - this.countColAfter].classList.contains(this.joueurTurn.getColor()) === divJouer.classList.contains(this.joueurTurn.getColor())
+      ){
+        this.countColAfter++
+        console.log(this.countColAfter);
+        count ++
+        console.log(count);
+        if (count == 4) {
+          alert('WINNER MA Gueule')
+        }
+
+        
+      }
+      return count
+    }
+    
+    diagonaleBasGauche(divJouer,count){
+      while (this.allCols[this.idColJouer - this.countColBefore] !== undefined &&
+        this.allCols[this.idColJouer - this.countColBefore].children[this.idRowJouer + this.countColBefore] !== undefined &&
+        this.allCols[this.idColJouer - this.countColBefore].children[this.idRowJouer + this.countColBefore].classList.contains(this.joueurTurn.getColor()) === divJouer.classList.contains(this.joueurTurn.getColor())
+      ){
+        this.countColBefore++
+        console.log(this.countColBefore);
+        count ++
+        console.log(count);
+        if (count == 4) {
+          alert('WINNER MA Gueule')
+        }
+      }
+    }
+
 
   
 }
